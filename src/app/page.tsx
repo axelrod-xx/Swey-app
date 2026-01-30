@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { motion, useMotionValue, PanInfo, useAnimation } from 'framer-motion';
 import { getRandomPhotos } from '@/lib/db';
 import { recordBattle } from '@/lib/actions';
@@ -118,28 +119,34 @@ export default function BattlePage() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-black">
       <motion.div
-        className="absolute top-0 left-0 w-full h-1/2"
+        className="absolute top-0 left-0 w-full h-1/2 relative"
         animate={topControls}
         style={{ y }}
       >
-        <img
+        <Image
           src={topPhoto.image_url}
           alt="Top"
-          className="h-full w-full object-cover"
+          fill
+          className="object-cover"
           draggable={false}
+          sizes="100vw"
+          unoptimized
         />
       </motion.div>
 
       <motion.div
-        className="absolute bottom-0 left-0 w-full h-1/2"
+        className="absolute bottom-0 left-0 w-full h-1/2 relative"
         animate={bottomControls}
         style={{ y }}
       >
-        <img
+        <Image
           src={bottomPhoto.image_url}
           alt="Bottom"
-          className="h-full w-full object-cover"
+          fill
+          className="object-cover"
           draggable={false}
+          sizes="100vw"
+          unoptimized
         />
       </motion.div>
 

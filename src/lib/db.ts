@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 import type { Photo } from './types';
 
 const MIN_PHOTOS_FOR_SIMILAR_ELO = 5;
@@ -17,6 +17,11 @@ function shuffle<T>(arr: T[]): T[] {
  * status='active', access_type='free' に限定。データが少ない場合は単純ランダムで2枚。
  */
 export async function getRandomPhotos(): Promise<Photo[] | null> {
+  const supabase = getSupabase();
+  if (!supabase) {
+    return null;
+  }
+
   const { data: photos, error } = await supabase
     .from('photos')
     .select('id, owner_id, image_url, elo_rating')
