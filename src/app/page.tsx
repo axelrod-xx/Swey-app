@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion, useMotionValue, PanInfo, useAnimation } from 'framer-motion';
-import { getRandomPhotos } from '@/lib/db';
-import { recordBattle } from '@/lib/actions';
+import { getRandomPhotos } from '@/lib/queries';
+import { votePhoto } from '@/lib/actions';
 import type { Photo } from '@/lib/types';
 
 export default function BattlePage() {
@@ -69,9 +70,7 @@ export default function BattlePage() {
 
       const winnerId = isSwipingDown ? bottomPhoto.id : topPhoto.id;
       const loserId = isSwipingDown ? topPhoto.id : bottomPhoto.id;
-
-      // 裏側でレート更新（待機しない）
-      recordBattle(winnerId, loserId, null);
+      votePhoto(winnerId, loserId, null);
 
       setTimeout(async () => {
         topControls.set({ y: 0 });
@@ -96,28 +95,30 @@ export default function BattlePage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-black">
-        <p className="text-white/80">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+        <p className="text-zinc-400">読み込み中...</p>
       </div>
     );
   }
 
   if (empty) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-center gap-4 bg-black px-6 text-center">
-        <p className="text-lg text-white/90">
-          写真がありません。投稿をお待ちください。
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-zinc-950 px-6 text-center">
+        <p className="text-lg text-zinc-300">写真がありません。投稿をお待ちください。</p>
+        <Link
+          href="/upload"
+          className="rounded-xl bg-amber-500/90 px-6 py-3 font-medium text-zinc-950 transition hover:bg-amber-400"
+        >
+          投稿する
+        </Link>
       </div>
     );
   }
 
-  if (!topPhoto || !bottomPhoto) {
-    return null;
-  }
+  if (!topPhoto || !bottomPhoto) return null;
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-black">
+    <div className="relative h-screen w-full overflow-hidden bg-zinc-950 sm:max-w-lg sm:mx-auto">
       <motion.div
         className="absolute top-0 left-0 w-full h-1/2 relative"
         animate={topControls}
