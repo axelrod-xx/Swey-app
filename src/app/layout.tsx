@@ -13,7 +13,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ja" className="dark">
-      <body className="min-h-screen bg-zinc-950 text-zinc-100">
+      <body className="min-h-screen bg-black text-zinc-100">
         <Nav />
         <main className="pb-16 sm:pb-0">{children}</main>
         <Toaster theme="dark" position="top-center" richColors />

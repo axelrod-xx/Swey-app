@@ -1,6 +1,7 @@
 'use server';
 
 import { createServerClient } from './supabase';
+import type { AccessType, PhotoTags } from './types';
 
 const K = 32;
 
@@ -64,8 +65,7 @@ export async function votePhoto(
 const BUCKET = 'PHOTOS';
 
 /**
- * ファイルを Storage (PHOTOS) にアップロードし、公開 URL を photos に保存する。
- * 未ログイン時は Vercel の SWEY_ANONYMOUS_OWNER_ID（profiles.id の UUID）を設定すること。
+ * 画像アップロード。tags（部位・作品名・キャラ名）、access_type、is_nsfw を設定可能。
  */
 export async function uploadPhoto(formData: FormData) {
   const file = formData.get('file') as File | null;
@@ -76,6 +76,21 @@ export async function uploadPhoto(formData: FormData) {
   const ownerId = process.env.SWEY_ANONYMOUS_OWNER_ID;
   if (!ownerId) {
     return { ok: false, error: '投稿用オーナーが未設定です（SWEY_ANONYMOUS_OWNER_ID）' };
+  }
+
+  const accessType = (formData.get('access_type') as AccessType) || 'free';
+  const isNsfw = formData.get('is_nsfw') === 'true';
+  const tagsRaw = formData.get('tags');
+  const tags: PhotoTags = {};
+  if (typeof tagsRaw === 'string') {
+    try {
+      const parsed = JSON.parse(tagsRaw) as Record<string, string>;
+      if (parsed.part) tags.part = parsed.part;
+      if (parsed.title) tags.title = parsed.title;
+      if (parsed.character) tags.character = parsed.character;
+    } catch {
+      // ignore
+    }
   }
 
   const supabase = createServerClient();
@@ -99,11 +114,42 @@ export async function uploadPhoto(formData: FormData) {
     image_url: imageUrl,
     elo_rating: 1500,
     status: 'active',
-    access_type: 'free',
+    access_type: accessType,
+    is_nsfw: isNsfw,
+    tags: Object.keys(tags).length ? tags : null,
   });
 
   if (insertError) {
     return { ok: false, error: insertError.message || '写真の登録に失敗しました' };
   }
   return { ok: true, url: imageUrl };
+}
+
+export async function followUser(followerId: string, followingId: string) {
+  const supabase = createServerClient();
+  const { error } = await supabase.from('follows').insert({ follower_id: followerId, following_id: followingId });
+  return { ok: !error, error: error?.message };
+}
+
+export async function unfollowUser(followerId: string, followingId: string) {
+  const supabase = createServerClient();
+  const { error } = await supabase.from('follows').delete().eq('follower_id', followerId).eq('following_id', followingId);
+  return { ok: !error, error: error?.message };
+}
+
+export async function sendMessage(senderId: string, receiverId: string, content: string) {
+  const supabase = createServerClient();
+  const { error } = await supabase.from('messages').insert({ sender_id: senderId, receiver_id: receiverId, content });
+  return { ok: !error, error: error?.message };
+}
+
+export async function subscribeCreator(subscriberId: string, creatorId: string, expiresAt: Date) {
+  const supabase = createServerClient();
+  const { error } = await supabase
+    .from('subscriptions')
+    .upsert(
+      { subscriber_id: subscriberId, creator_id: creatorId, expires_at: expiresAt.toISOString() },
+      { onConflict: 'subscriber_id,creator_id' }
+    );
+  return { ok: !error, error: error?.message };
 }

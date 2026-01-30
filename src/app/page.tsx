@@ -21,7 +21,7 @@ export default function BattlePage() {
   const bottomControls = useAnimation();
 
   const loadNextPair = useCallback(async () => {
-    const pair = await getRandomPhotos();
+    const pair = await getRandomPhotos(null);
     if (!pair || pair.length < 2) {
       setTopPhoto(null);
       setBottomPhoto(null);
@@ -77,7 +77,7 @@ export default function BattlePage() {
         bottomControls.set({ y: 0 });
         y.set(0);
 
-        const pair = await getRandomPhotos();
+        const pair = await getRandomPhotos(null);
         if (pair && pair.length >= 2) {
           setTopPhoto(pair[0]);
           setBottomPhoto(pair[1]);
@@ -95,19 +95,19 @@ export default function BattlePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <p className="text-zinc-400">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-black">
+        <p className="text-zinc-500">読み込み中...</p>
       </div>
     );
   }
 
   if (empty) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-zinc-950 px-6 text-center">
-        <p className="text-lg text-zinc-300">写真がありません。投稿をお待ちください。</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black px-6 text-center">
+        <p className="text-lg text-zinc-400">写真がありません。投稿をお待ちください。</p>
         <Link
           href="/upload"
-          className="rounded-xl bg-amber-500/90 px-6 py-3 font-medium text-zinc-950 transition hover:bg-amber-400"
+          className="rounded-xl bg-[#8B1538] px-6 py-3 font-medium text-white transition hover:bg-[#E63946]"
         >
           投稿する
         </Link>
@@ -118,9 +118,9 @@ export default function BattlePage() {
   if (!topPhoto || !bottomPhoto) return null;
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-zinc-950 sm:max-w-lg sm:mx-auto">
+    <div className="relative h-screen w-full overflow-hidden bg-black sm:mx-auto sm:max-w-lg">
       <motion.div
-        className="absolute top-0 left-0 w-full h-1/2 relative"
+        className="absolute top-0 left-0 h-1/2 w-full relative"
         animate={topControls}
         style={{ y }}
       >
@@ -136,7 +136,7 @@ export default function BattlePage() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-0 left-0 w-full h-1/2 relative"
+        className="absolute bottom-0 left-0 h-1/2 w-full relative"
         animate={bottomControls}
         style={{ y }}
       >
