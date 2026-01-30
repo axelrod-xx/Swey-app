@@ -25,6 +25,7 @@ export type Profile = {
   display_name: string | null;
   avatar_url: string | null;
   elo_rating: number;
+  is_admin?: boolean;
 };
 
 /** DB: public.battles */
@@ -55,4 +56,37 @@ export type Subscription = {
   subscriber_id: string;
   creator_id: string;
   expires_at: string;
+};
+
+/** DB: public.purchases */
+export type Purchase = {
+  id: string;
+  buyer_id: string;
+  photo_id: string;
+  amount_cents: number;
+  stripe_payment_intent_id: string | null;
+  created_at: string;
+};
+
+/** DB: public.payouts */
+export type Payout = {
+  id: string;
+  creator_id: string;
+  amount_cents: number;
+  status: 'pending' | 'paid' | 'failed';
+  stripe_payout_id: string | null;
+  created_at: string;
+  paid_at: string | null;
+};
+
+/** DB: public.reports */
+export type Report = {
+  id: string;
+  reporter_id: string;
+  photo_id: string;
+  reason: string | null;
+  status: 'pending' | 'resolved' | 'dismissed';
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
 };

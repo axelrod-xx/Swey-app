@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/contexts/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -12,23 +13,18 @@ const config: Config = {
         rounded: ["var(--font-mplus-rounded)", "sans-serif"],
       },
       colors: {
-        pop: {
-          cream: "#FFF8F0",
-          lavender: "#F5F0FF",
-          pink: "#FF6B9D",
-          pinkLight: "#FF85A2",
-          orange: "#FF9F43",
-          orangeLight: "#FFB347",
-          mint: "#6BCB77",
-          mintLight: "#4CD964",
-          purple: "#A855F7",
-          text: "#374151",
-          textDark: "#1F2937",
+        candy: {
+          cream: "#FFFCF5",
+          peach: "#FF9EAA",
+          mint: "#87E3D3",
+          lavender: "#C3B1E1",
+          text: "#4A4458",
+          textDark: "#2D2838",
         },
       },
       boxShadow: {
-        pop: "0 4px 14px 0 rgba(255, 107, 157, 0.15)",
-        popCard: "0 8px 24px -4px rgba(0,0,0,0.08), 0 4px 8px -2px rgba(0,0,0,0.04)",
+        "candy-jelly": "0 4px 0 0 rgba(0,0,0,0.08), 0 6px 12px -2px rgba(255,158,170,0.2)",
+        "candy-card": "0 3px 0 0 rgba(0,0,0,0.06), 0 6px 16px -4px rgba(0,0,0,0.06)",
       },
     },
   },

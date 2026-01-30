@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { M_PLUS_Rounded_1c } from 'next/font/google';
 import { Toaster } from 'sonner';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { Nav } from './Nav';
+import { LoginModal } from '@/components/LoginModal';
 import './globals.css';
 
 const mplus = M_PLUS_Rounded_1c({
@@ -21,10 +23,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ja" className={mplus.variable}>
-      <body className="min-h-screen bg-pop-cream text-pop-text font-rounded">
-        <Nav />
-        <main className="pb-20 sm:pb-6">{children}</main>
-        <Toaster theme="light" position="top-center" richColors />
+      <body className="min-h-screen bg-candy-cream text-candy-text font-rounded">
+        <AuthProvider>
+          <Nav />
+          <main className="pb-20 sm:pb-6">{children}</main>
+          <LoginModal />
+          <Toaster theme="light" position="top-center" richColors />
+        </AuthProvider>
       </body>
     </html>
   );

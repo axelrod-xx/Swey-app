@@ -73,9 +73,9 @@ export async function uploadPhoto(formData: FormData) {
     return { ok: false, error: 'ファイルを選択してください' };
   }
 
-  const ownerId = process.env.SWEY_ANONYMOUS_OWNER_ID;
+  const ownerId = (formData.get('userId') as string) || process.env.SWEY_ANONYMOUS_OWNER_ID;
   if (!ownerId) {
-    return { ok: false, error: '投稿用オーナーが未設定です（SWEY_ANONYMOUS_OWNER_ID）' };
+    return { ok: false, error: 'ログインするか、投稿用オーナーを設定してください' };
   }
 
   const accessType = (formData.get('access_type') as AccessType) || 'free';
@@ -151,5 +151,49 @@ export async function subscribeCreator(subscriberId: string, creatorId: string, 
       { subscriber_id: subscriberId, creator_id: creatorId, expires_at: expiresAt.toISOString() },
       { onConflict: 'subscriber_id,creator_id' }
     );
+  return { ok: !error, error: error?.message };
+}
+
+/** 管理者かどうか確認 */
+async function ensureAdmin(adminUserId: string): Promise<boolean> {
+  const supabase = createServerClient();
+  const { data } = await supabase.from('profiles').select('is_admin').eq('id', adminUserId).single();
+  return (data as { is_admin?: boolean } | null)?.is_admin === true;
+}
+
+export async function adminBanUser(adminUserId: string, targetUserId: string) {
+  if (!(await ensureAdmin(adminUserId))) return { ok: false, error: '権限がありません' };
+  const supabase = createServerClient();
+  const { error } = await supabase.from('profiles').update({ is_banned: true }).eq('id', targetUserId);
+  return { ok: !error, error: error?.message };
+}
+
+export async function adminUnbanUser(adminUserId: string, targetUserId: string) {
+  if (!(await ensureAdmin(adminUserId))) return { ok: false, error: '権限がありません' };
+  const supabase = createServerClient();
+  const { error } = await supabase.from('profiles').update({ is_banned: false }).eq('id', targetUserId);
+  return { ok: !error, error: error?.message };
+}
+
+export async function adminHidePhoto(adminUserId: string, photoId: string) {
+  if (!(await ensureAdmin(adminUserId))) return { ok: false, error: '権限がありません' };
+  const supabase = createServerClient();
+  const { error } = await supabase.from('photos').update({ status: 'hidden' }).eq('id', photoId);
+  return { ok: !error, error: error?.message };
+}
+
+export async function adminResolveReport(adminUserId: string, reportId: string, action: 'resolved' | 'dismissed') {
+  if (!(await ensureAdmin(adminUserId))) return { ok: false, error: '権限がありません' };
+  const supabase = createServerClient();
+  const { error } = await supabase
+    .from('reports')
+    .update({ status: action, resolved_at: new Date().toISOString(), resolved_by: adminUserId })
+    .eq('id', reportId);
+  return { ok: !error, error: error?.message };
+}
+
+export async function reportPhoto(reporterId: string, photoId: string, reason: string) {
+  const supabase = createServerClient();
+  const { error } = await supabase.from('reports').insert({ reporter_id: reporterId, photo_id: photoId, reason });
   return { ok: !error, error: error?.message };
 }

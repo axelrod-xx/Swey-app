@@ -2,30 +2,51 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-
-const ANON_ID = process.env.NEXT_PUBLIC_ANONYMOUS_OWNER_ID || '';
+import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function ProfileRootPage() {
+  const { userId, openLoginModal } = useAuth();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
-  if (ANON_ID) {
+
+  if (userId) {
     return (
-      <div className="mx-auto max-w-lg bg-pop-cream px-4 py-8">
-        <p className="text-pop-text/80">プロフィールを表示しています。</p>
+      <div className="mx-auto max-w-lg bg-candy-cream px-4 py-8">
+        <p className="text-candy-text/80">プロフィールを表示してるよ 💕</p>
         <Link
-          href={`/profile/${ANON_ID}`}
-          className="mt-4 inline-block rounded-2xl bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] px-6 py-3 font-bold text-white shadow-pop hover:opacity-90"
+          href={`/profile/${userId}`}
+          className="mt-4 inline-block candy-btn jelly-pink px-6 py-3 font-bold"
         >
           自分のプロフィールへ
         </Link>
       </div>
     );
   }
+
   return (
-    <div className="mx-auto max-w-lg bg-pop-cream px-4 py-12 text-center">
-      <p className="text-pop-text/80">ログインするとプロフィールが表示されます。</p>
+    <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-12 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="candy-card max-w-sm p-8"
+      >
+        <p className="mb-2 text-xl font-bold text-candy-text">ログインするとプロフィールが表示されるよ 🐻</p>
+        <p className="mb-6 text-sm text-candy-text/70">マイページはログイン後に利用できます</p>
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.97 }}
+          onClick={openLoginModal}
+          className="candy-btn jelly-pink w-full py-4 font-bold"
+        >
+          ログインする
+        </motion.button>
+        <Link href="/" className="mt-4 block text-sm font-medium text-candy-peach underline">
+          トップへ戻る
+        </Link>
+      </motion.div>
     </div>
   );
 }

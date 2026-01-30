@@ -1,0 +1,73 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import type { Photo } from '@/lib/types';
+
+type Props = {
+  photo: Photo;
+  canView: boolean;
+  variant?: 'full' | 'thumb' | 'battle';
+  onUnlockClick?: (photo: Photo) => void;
+  href?: string;
+};
+
+export function PhotoWithAccess({ photo, canView, variant = 'full', onUnlockClick, href }: Props) {
+  const isFollowerOnly = photo.access_type === 'follower';
+  const isPaid = photo.access_type === 'paid';
+
+  const overlay = !canView && (
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-black/50 p-4 backdrop-blur-md">
+      <p className="text-center text-sm font-bold text-white drop-shadow">
+        {isFollowerOnly ? 'フォローすると見られます' : isPaid ? 'サブスク or 購入で見られます' : '閲覧できません'}
+      </p>
+      {isPaid && (
+        <button
+          type="button"
+          onClick={() => onUnlockClick?.(photo)}
+          className="candy-btn jelly-pink px-5 py-2.5 text-sm font-bold"
+        >
+          アンロック
+        </button>
+      )}
+      {isFollowerOnly && href && (
+        <Link href={href} className="candy-btn jelly-outline px-5 py-2.5 text-sm font-bold text-candy-text">
+          フォローして見る
+        </Link>
+      )}
+    </div>
+  );
+
+  const content = (
+    <>
+      <Image
+        src={photo.image_url}
+        alt=""
+        fill
+        className={`object-cover ${!canView ? 'blur-xl scale-110' : ''}`}
+        sizes={variant === 'battle' ? '100vw' : variant === 'thumb' ? '33vw' : '(max-width: 512px) 100vw, 512px'}
+        unoptimized
+      />
+      {overlay}
+    </>
+  );
+
+  if (variant === 'battle') {
+    return (
+      <motion.div className="relative h-full w-full overflow-hidden rounded-2xl">
+        {content}
+      </motion.div>
+    );
+  }
+
+  const wrapperClass = variant === 'thumb'
+    ? 'relative aspect-square overflow-hidden rounded-2xl border-2 border-candy-peach/30 bg-white shadow-candy-card'
+    : 'relative aspect-[4/5] w-full overflow-hidden rounded-2xl border-2 border-candy-peach/30 bg-white shadow-candy-card';
+
+  return (
+    <div className={wrapperClass}>
+      {content}
+    </div>
+  );
+}

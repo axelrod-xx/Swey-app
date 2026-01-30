@@ -4,25 +4,39 @@
 
 @layer base {
   :root {
-    --cream: #FFF8F0;
-    --lavender: #F5F0FF;
-    --pink: #FF6B9D;
-    --pink-light: #FF85A2;
-    --orange: #FF9F43;
-    --mint: #6BCB77;
-    --text: #374151;
-    --text-dark: #1F2937;
+    --candy-cream: #FFFCF5;
+    --candy-peach: #FF9EAA;
+    --candy-mint: #87E3D3;
+    --candy-lavender: #C3B1E1;
+    --candy-text: #4A4458;
   }
   body {
-    @apply bg-pop-cream text-pop-text antialiased;
+    @apply bg-candy-cream text-candy-text antialiased;
     font-family: var(--font-mplus-rounded), sans-serif;
   }
 }
 
-/* Fantia風ポップ：丸角・立体感 */
-.pop-card {
-  @apply rounded-2xl shadow-popCard;
+/* キャンディ・ポップ：ステッカー＆ゼリー */
+.candy-card {
+  @apply rounded-2xl border-[3px] border-candy-peach/40 bg-white shadow-candy-card;
+  box-shadow: 0 2px 0 0 rgba(0,0,0,0.05), 0 6px 16px -4px rgba(0,0,0,0.06);
 }
-.pop-btn {
-  @apply rounded-2xl font-medium shadow-pop transition active:scale-[0.98];
+.candy-btn {
+  @apply rounded-2xl font-medium transition;
+}
+.candy-btn.jelly-pink {
+  @apply border-[3px] border-[#e88a96] bg-candy-peach text-white shadow-candy-jelly;
+}
+.candy-btn.jelly-pink:active {
+  transform: scale(0.98);
+  box-shadow: 0 1px 0 0 rgba(0,0,0,0.08);
+}
+.candy-btn.jelly-outline {
+  @apply border-[3px] border-candy-lavender bg-white text-candy-text shadow-candy-card;
+}
+.candy-btn.jelly-outline:active {
+  transform: scale(0.98);
+}
+.candy-input {
+  @apply rounded-xl border-[3px] border-candy-lavender/60 bg-white px-4 py-3 text-candy-text placeholder:text-candy-text/40 focus:border-candy-peach focus:outline-none focus:ring-2 focus:ring-candy-peach/20;
 }
