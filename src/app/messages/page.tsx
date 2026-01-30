@@ -48,26 +48,26 @@ export default function MessagesPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
-        <p className="text-zinc-500">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-pop-cream to-pop-lavender">
+        <p className="text-pop-text">読み込み中...</p>
       </div>
     );
   }
 
   if (!ANON_ID) {
     return (
-      <div className="mx-auto max-w-lg bg-black px-4 py-12 text-center">
-        <p className="text-zinc-500">DM 利用には NEXT_PUBLIC_ANONYMOUS_OWNER_ID（現在のユーザーID）の設定が必要です。</p>
+      <div className="mx-auto max-w-lg bg-pop-cream px-4 py-12 text-center">
+        <p className="text-pop-text/80">DM 利用には NEXT_PUBLIC_ANONYMOUS_OWNER_ID（現在のユーザーID）の設定が必要です。</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col bg-black sm:flex-row sm:h-[calc(100vh-4rem)]">
-      <aside className="w-full border-b border-zinc-900 sm:w-64 sm:border-b-0 sm:border-r">
-        <h1 className="border-b border-zinc-900 p-4 text-lg font-semibold text-zinc-100">DM</h1>
+    <div className="mx-auto flex max-w-lg flex-col bg-pop-cream sm:flex-row sm:h-[calc(100vh-4rem)]">
+      <aside className="w-full border-b-2 border-pop-lavender bg-white/80 sm:w-64 sm:border-b-0 sm:border-r-2 sm:border-pop-lavender">
+        <h1 className="border-b-2 border-pop-lavender p-4 text-lg font-bold text-pop-text">DM</h1>
         {partners.length === 0 ? (
-          <p className="p-4 text-sm text-zinc-500">メッセージのやり取りがあるユーザーがいません。</p>
+          <p className="p-4 text-sm text-pop-text/70">メッセージのやり取りがあるユーザーがいません。</p>
         ) : (
           <ul>
             {partners.map((p) => (
@@ -75,8 +75,10 @@ export default function MessagesPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedId(p.id)}
-                  className={`w-full px-4 py-3 text-left text-sm transition ${
-                    selectedId === p.id ? 'bg-[#8B1538]/30 text-[#E63946]' : 'text-zinc-300 hover:bg-zinc-900'
+                  className={`w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition shadow-popCard active:scale-[0.98] ${
+                    selectedId === p.id
+                      ? 'bg-gradient-to-r from-[#FF85A2] to-[#FF6B9D] text-white'
+                      : 'text-pop-text hover:bg-pop-lavender/50'
                   }`}
                 >
                   {p.display_name || p.id.slice(0, 8)}
@@ -86,7 +88,7 @@ export default function MessagesPage() {
           </ul>
         )}
       </aside>
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col bg-pop-cream">
         {selectedId ? (
           <>
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
@@ -96,8 +98,10 @@ export default function MessagesPage() {
                   className={`flex ${m.sender_id === ANON_ID ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                      m.sender_id === ANON_ID ? 'bg-[#8B1538]/50 text-white' : 'bg-zinc-800 text-zinc-200'
+                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-popCard ${
+                      m.sender_id === ANON_ID
+                        ? 'bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] text-white'
+                        : 'bg-white border-2 border-pop-lavender text-pop-text'
                     }`}
                   >
                     {m.content}
@@ -105,24 +109,24 @@ export default function MessagesPage() {
                 </div>
               ))}
             </div>
-            <form onSubmit={handleSend} className="flex gap-2 border-t border-zinc-900 p-4">
+            <form onSubmit={handleSend} className="flex gap-2 border-t-2 border-pop-lavender bg-white/80 p-4">
               <input
                 type="text"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="メッセージ..."
-                className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-zinc-100 placeholder:text-zinc-500"
+                className="flex-1 rounded-2xl border-2 border-pop-lavender bg-pop-cream px-4 py-2.5 text-pop-text placeholder:text-pop-text/50"
               />
               <button
                 type="submit"
-                className="rounded-lg bg-[#8B1538] px-4 py-2 text-sm font-medium text-white hover:bg-[#E63946]"
+                className="pop-btn rounded-2xl bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] px-4 py-2.5 text-sm font-bold text-white shadow-pop"
               >
                 送信
               </button>
             </form>
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-zinc-500">
+          <div className="flex flex-1 items-center justify-center text-pop-text/70">
             ユーザーを選択してください
           </div>
         )}

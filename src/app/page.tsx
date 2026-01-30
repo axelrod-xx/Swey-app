@@ -8,6 +8,8 @@ import { getRandomPhotos } from '@/lib/queries';
 import { votePhoto } from '@/lib/actions';
 import type { Photo } from '@/lib/types';
 
+const springBouncy = { type: 'spring' as const, stiffness: 400, damping: 28 };
+
 export default function BattlePage() {
   const [topPhoto, setTopPhoto] = useState<Photo | null>(null);
   const [bottomPhoto, setBottomPhoto] = useState<Photo | null>(null);
@@ -61,11 +63,11 @@ export default function BattlePage() {
       setSwiping(true);
 
       if (isSwipingDown) {
-        topControls.start({ y: screenHeight / 2, transition: { duration: 0.3 } });
-        bottomControls.start({ y: -screenHeight / 2, transition: { duration: 0.3 } });
+        topControls.start({ y: screenHeight / 2, transition: springBouncy });
+        bottomControls.start({ y: -screenHeight / 2, transition: springBouncy });
       } else {
-        topControls.start({ y: -screenHeight / 2, transition: { duration: 0.3 } });
-        bottomControls.start({ y: screenHeight / 2, transition: { duration: 0.3 } });
+        topControls.start({ y: -screenHeight / 2, transition: springBouncy });
+        bottomControls.start({ y: screenHeight / 2, transition: springBouncy });
       }
 
       const winnerId = isSwipingDown ? bottomPhoto.id : topPhoto.id;
@@ -87,7 +89,7 @@ export default function BattlePage() {
           setEmpty(true);
         }
         setSwiping(false);
-      }, 300);
+      }, 350);
     } else {
       y.set(0);
     }
@@ -95,19 +97,25 @@ export default function BattlePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
-        <p className="text-zinc-500">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-pop-cream to-pop-lavender">
+        <motion.p
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ repeat: Infinity, duration: 1.2 }}
+          className="text-lg font-medium text-pop-text"
+        >
+          読み込み中...
+        </motion.p>
       </div>
     );
   }
 
   if (empty) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-black px-6 text-center">
-        <p className="text-lg text-zinc-400">写真がありません。投稿をお待ちください。</p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-gradient-to-b from-pop-cream to-pop-lavender px-6 text-center">
+        <p className="text-lg font-medium text-pop-text">写真がありません。投稿をお待ちください。</p>
         <Link
           href="/upload"
-          className="rounded-xl bg-[#8B1538] px-6 py-3 font-medium text-white transition hover:bg-[#E63946]"
+          className="pop-btn rounded-3xl bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] px-8 py-4 font-bold text-white shadow-pop"
         >
           投稿する
         </Link>
@@ -118,9 +126,9 @@ export default function BattlePage() {
   if (!topPhoto || !bottomPhoto) return null;
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black sm:mx-auto sm:max-w-lg">
+    <div className="relative h-screen w-full overflow-hidden rounded-t-3xl bg-pop-cream sm:mx-auto sm:max-w-lg">
       <motion.div
-        className="absolute top-0 left-0 h-1/2 w-full relative"
+        className="absolute top-0 left-0 h-1/2 w-full relative rounded-b-3xl overflow-hidden shadow-popCard"
         animate={topControls}
         style={{ y }}
       >
@@ -136,7 +144,7 @@ export default function BattlePage() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-0 left-0 h-1/2 w-full relative"
+        className="absolute bottom-0 left-0 h-1/2 w-full relative rounded-t-3xl overflow-hidden shadow-popCard"
         animate={bottomControls}
         style={{ y }}
       >
@@ -155,14 +163,14 @@ export default function BattlePage() {
         className="absolute inset-0 z-10 cursor-grab active:cursor-grabbing touch-none"
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={0.2}
+        dragElastic={0.25}
         onDragEnd={handleDragEnd}
         style={{ y }}
       >
         <div className="h-full w-full" />
       </motion.div>
 
-      <div className="absolute top-1/2 left-0 z-20 h-0.5 w-full -translate-y-1/2 bg-white/30 pointer-events-none" />
+      <div className="absolute top-1/2 left-0 z-20 h-1 w-full -translate-y-1/2 rounded-full bg-white/60 shadow-lg pointer-events-none" />
     </div>
   );
 }

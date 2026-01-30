@@ -67,81 +67,83 @@ export default function ProfileIdPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black">
-        <p className="text-zinc-500">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-pop-cream to-pop-lavender">
+        <p className="text-pop-text">読み込み中...</p>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="mx-auto max-w-lg bg-black px-4 py-12 text-center">
-        <p className="text-zinc-500">ユーザーが見つかりません。</p>
-        <Link href="/" className="mt-4 inline-block text-[#E63946] hover:underline">ホームへ</Link>
+      <div className="mx-auto max-w-lg bg-pop-cream px-4 py-12 text-center">
+        <p className="text-pop-text/80">ユーザーが見つかりません。</p>
+        <Link href="/" className="mt-4 inline-block rounded-2xl bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] px-6 py-3 font-bold text-white shadow-pop hover:opacity-90">
+          ホームへ
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-lg bg-black px-4 py-8">
-      <div className="mb-6 flex items-center gap-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-zinc-800">
+    <div className="mx-auto max-w-lg bg-pop-cream px-4 py-8">
+      <div className="mb-6 flex items-center gap-4 rounded-2xl bg-white p-4 shadow-popCard">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border-2 border-pop-lavender bg-pop-lavender/50">
           {profile.avatar_url ? (
             <Image src={profile.avatar_url} alt="" fill className="object-cover" unoptimized />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-2xl text-zinc-500">?</div>
+            <div className="flex h-full w-full items-center justify-center text-2xl text-pop-text/50">?</div>
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-lg font-semibold text-zinc-100">
+          <h1 className="truncate text-lg font-bold text-pop-text">
             {profile.display_name || '名無し'}
           </h1>
-          <p className="font-mono text-sm text-[#E63946]">Elo {profile.elo_rating}</p>
-          <p className="text-xs text-zinc-500">フォロワー {followerCount}</p>
+          <p className="font-mono text-sm font-bold text-[#FF6B9D]">Elo {profile.elo_rating}</p>
+          <p className="text-xs text-pop-text/70">フォロワー {followerCount}</p>
         </div>
       </div>
 
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 flex flex-wrap gap-2">
         {CURRENT_USER_ID && CURRENT_USER_ID !== id && (
           <>
             <button
               type="button"
               onClick={handleFollow}
-              className="rounded-xl bg-[#8B1538] px-4 py-2 text-sm font-medium text-white hover:bg-[#E63946]"
+              className="pop-btn rounded-2xl bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] px-4 py-2 text-sm font-bold text-white shadow-pop"
             >
               フォロー
             </button>
             <button
               type="button"
               onClick={handleUnfollow}
-              className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-900"
+              className="rounded-2xl border-2 border-pop-lavender bg-white px-4 py-2 text-sm font-medium text-pop-text shadow-popCard hover:bg-pop-lavender/30"
             >
               フォロー解除
             </button>
             <button
               type="button"
               onClick={handleSubscribe}
-              className="rounded-xl border border-[#8B1538] px-4 py-2 text-sm text-[#E63946] hover:bg-[#8B1538]/20"
+              className="rounded-2xl border-2 border-[#6BCB77] bg-[#6BCB77]/15 px-4 py-2 text-sm font-medium text-[#6BCB77] shadow-popCard hover:bg-[#6BCB77]/25"
             >
               サブスク
             </button>
           </>
         )}
         <Link
-          href={`/messages`}
-          className="rounded-xl border border-zinc-700 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-900"
+          href="/messages"
+          className="rounded-2xl border-2 border-pop-lavender bg-white px-4 py-2 text-sm font-medium text-pop-text shadow-popCard hover:bg-pop-lavender/30"
         >
           DM
         </Link>
       </div>
 
-      <h2 className="mb-4 text-sm font-medium text-zinc-400">投稿一覧</h2>
+      <h2 className="mb-4 text-sm font-bold text-pop-text">投稿一覧</h2>
       {!photos?.length ? (
-        <p className="text-zinc-500">まだ投稿がありません。</p>
+        <p className="text-pop-text/70">まだ投稿がありません。</p>
       ) : (
         <ul className="grid grid-cols-3 gap-2">
           {photos.map((photo) => (
-            <li key={photo.id} className="relative aspect-square overflow-hidden rounded-lg bg-zinc-900">
+            <li key={photo.id} className="relative aspect-square overflow-hidden rounded-2xl bg-white shadow-popCard">
               <Image
                 src={photo.image_url}
                 alt=""
@@ -150,7 +152,7 @@ export default function ProfileIdPage() {
                 sizes="33vw"
                 unoptimized
               />
-              <span className="absolute bottom-1 left-1 rounded bg-black/70 px-1.5 py-0.5 font-mono text-xs text-[#E63946]">
+              <span className="absolute bottom-1 left-1 rounded-xl bg-black/60 px-1.5 py-0.5 font-mono text-xs font-bold text-[#FF9F43]">
                 {photo.elo_rating}
               </span>
             </li>

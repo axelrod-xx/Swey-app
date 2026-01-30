@@ -12,17 +12,20 @@ export default function ProfileRootPage() {
   if (!mounted) return null;
   if (ANON_ID) {
     return (
-      <div className="mx-auto max-w-lg bg-black px-4 py-8">
-        <p className="text-zinc-400">プロフィールを表示しています。</p>
-        <Link href={`/profile/${ANON_ID}`} className="mt-4 inline-block text-[#E63946] hover:underline">
+      <div className="mx-auto max-w-lg bg-pop-cream px-4 py-8">
+        <p className="text-pop-text/80">プロフィールを表示しています。</p>
+        <Link
+          href={`/profile/${ANON_ID}`}
+          className="mt-4 inline-block rounded-2xl bg-gradient-to-r from-[#FF6B9D] to-[#FF9F43] px-6 py-3 font-bold text-white shadow-pop hover:opacity-90"
+        >
           自分のプロフィールへ
         </Link>
       </div>
     );
   }
   return (
-    <div className="mx-auto max-w-lg bg-black px-4 py-12 text-center">
-      <p className="text-zinc-500">ログインするとプロフィールが表示されます。</p>
+    <div className="mx-auto max-w-lg bg-pop-cream px-4 py-12 text-center">
+      <p className="text-pop-text/80">ログインするとプロフィールが表示されます。</p>
     </div>
   );
 }
