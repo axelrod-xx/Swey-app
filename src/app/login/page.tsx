@@ -1,18 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { motion } from 'framer-motion';
 import { User } from '@phosphor-icons/react';
 import { getSupabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
-export default function LoginPage() {
+type Mode = 'login' | 'signup';
+
+function LoginPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get('mode');
+  const { userId, loading: authLoading } = useAuth();
+  const [mode, setMode] = useState<Mode>(modeParam === 'signup' ? 'signup' : 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (modeParam === 'signup') setMode('signup');
+  }, [modeParam]);
+  useEffect(() => {
+    if (!authLoading && userId) router.replace('/');
+  }, [authLoading, userId, router]);
 
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -33,7 +48,34 @@ export default function LoginPage() {
     router.refresh();
   }
 
-  async function handleSocialLogin(provider: 'google' | 'github') {
+  async function handleSignUp(e: React.FormEvent) {
+    e.preventDefault();
+    const supabase = getSupabase();
+    if (!supabase) {
+      toast.error('設定を確認してください');
+      return;
+    }
+    setLoading(true);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { display_name: displayName } },
+    });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (data?.user?.identities?.length === 0) {
+      toast.error('このメールアドレスは既に登録されています');
+      return;
+    }
+    toast.success('アカウントを作成しました。メールをご確認ください');
+    router.push('/');
+    router.refresh();
+  }
+
+  async function handleSocialLogin(provider: 'google') {
     const supabase = getSupabase();
     if (!supabase) return;
     const { error } = await supabase.auth.signInWithOAuth({ provider });
@@ -43,8 +85,14 @@ export default function LoginPage() {
     }
   }
 
+  function handleForgotPassword() {
+    toast.info('パスワードリセットは開発中です');
+  }
+
+  const isSignUp = mode === 'signup';
+
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-12">
+    <div className="min-h-screen bg-white px-4 py-12">
       <div className="mx-auto max-w-sm">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -52,20 +100,60 @@ export default function LoginPage() {
           transition={{ duration: 0.4 }}
           className="mb-8 text-center"
         >
-          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-sm">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-100 bg-slate-50 shadow-sm">
             <User size={32} weight="regular" className="text-slate-400" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900">SWEY へようこそ</h1>
-          <p className="mt-1 text-sm text-slate-500">ログインして応援を始めましょう</p>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {isSignUp ? '新規アカウント作成' : 'SWEY へようこそ'}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {isSignUp ? 'アカウントを作成して始めましょう' : 'ログインして応援を始めましょう'}
+          </p>
         </motion.div>
 
+        {/* タブ切り替え */}
+        <div className="mb-6 flex rounded-xl border border-slate-100 bg-slate-50 p-1">
+          <button
+            type="button"
+            onClick={() => setMode('login')}
+            className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition ${
+              !isSignUp ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+            }`}
+          >
+            ログイン
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('signup')}
+            className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition ${
+              isSignUp ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+            }`}
+          >
+            新規登録
+          </button>
+        </div>
+
         <motion.form
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          onSubmit={handleEmailLogin}
+          key={mode}
+          initial={{ opacity: 0, x: 8 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          onSubmit={isSignUp ? handleSignUp : handleEmailLogin}
           className="space-y-4"
         >
+          {isSignUp && (
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-slate-700">表示名</span>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required={isSignUp}
+                placeholder="ニックネーム"
+                className="modern-input w-full"
+              />
+            </label>
+          )}
           <label className="block">
             <span className="mb-1.5 block text-sm font-medium text-slate-700">メールアドレス</span>
             <input
@@ -87,6 +175,15 @@ export default function LoginPage() {
               placeholder="••••••••"
               className="modern-input w-full"
             />
+            {!isSignUp && (
+              <button
+                type="button"
+                onClick={handleForgotPassword}
+                className="mt-1.5 block text-xs text-indigo-600 hover:underline"
+              >
+                パスワードをお忘れですか？
+              </button>
+            )}
           </label>
           <motion.button
             type="submit"
@@ -95,7 +192,13 @@ export default function LoginPage() {
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             className="btn-primary w-full py-4"
           >
-            {loading ? 'ログイン中...' : 'ログインする'}
+            {loading
+              ? isSignUp
+                ? '登録中...'
+                : 'ログイン中...'
+              : isSignUp
+              ? 'アカウントを作成'
+              : 'ログインする'}
           </motion.button>
         </motion.form>
 
@@ -109,7 +212,6 @@ export default function LoginPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.4 }}
-          className="space-y-3"
         >
           <motion.button
             type="button"
@@ -125,25 +227,26 @@ export default function LoginPage() {
             </svg>
             Google でログイン
           </motion.button>
-          <motion.button
-            type="button"
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleSocialLogin('github')}
-            className="btn-secondary flex w-full items-center justify-center gap-2 py-3.5"
-          >
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-            </svg>
-            GitHub でログイン
-          </motion.button>
         </motion.div>
 
         <p className="mt-8 text-center text-sm text-slate-500">
-          <Link href="/" className="font-medium text-indigo-600 underline decoration-2 underline-offset-2 hover:text-indigo-700">
+          <Link href="/welcome" className="font-medium text-indigo-600 underline decoration-2 underline-offset-2 hover:text-indigo-700">
             トップへ戻る
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <p className="text-slate-500">読み込み中...</p>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   );
 }

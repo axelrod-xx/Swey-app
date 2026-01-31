@@ -41,6 +41,13 @@ export function LoginModal() {
               >
                 ログインする
               </Link>
+              <Link
+                href="/login?mode=signup"
+                onClick={closeLoginModal}
+                className="mb-2 block w-full max-w-xs rounded-xl border border-slate-200 bg-white py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                新規登録
+              </Link>
               <button
                 type="button"
                 onClick={closeLoginModal}

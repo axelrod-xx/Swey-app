@@ -3,25 +3,27 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { House, Trophy, PlusCircle, ChatCircleDots, UserCircle } from '@phosphor-icons/react';
+import { Clock, Fire, Trophy, ChatCircleDots, User, PlusCircle } from '@phosphor-icons/react';
 
 const links = [
-  { href: '/', label: 'ホーム', Icon: House, weight: 'regular' as const },
+  { href: '/timeline', label: 'タイムライン', Icon: Clock, weight: 'regular' as const },
+  { href: '/', label: 'スワイプ', Icon: Fire, weight: 'fill' as const },
   { href: '/ranking', label: 'ランキング', Icon: Trophy, weight: 'regular' as const },
   { href: '/upload', label: '投稿', Icon: PlusCircle, weight: 'fill' as const, center: true },
   { href: '/messages', label: 'メッセージ', Icon: ChatCircleDots, weight: 'regular' as const },
-  { href: '/profile', label: 'マイページ', Icon: UserCircle, weight: 'regular' as const },
+  { href: '/profile', label: 'マイページ', Icon: User, weight: 'regular' as const },
 ];
 
 export function Nav() {
   const pathname = usePathname();
-  const isActive = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(href));
+  const isActive = (href: string) =>
+    pathname === href || (href !== '/' && pathname.startsWith(href));
 
   return (
     <>
-      {/* Mobile: ボトムドック (Glassmorphism) */}
+      {/* Mobile: ボトムドック */}
       <nav className="fixed bottom-6 left-4 right-4 z-50 md:hidden">
-        <div className="flex items-center justify-center gap-2 rounded-2xl border border-white/60 bg-white/80 px-3 py-2 shadow-lg backdrop-blur-xl">
+        <div className="flex items-center justify-center gap-1 rounded-2xl border border-white/60 bg-white/80 px-2 py-2 shadow-lg backdrop-blur-xl">
           {links.map(({ href, label, Icon, weight, center }) => (
             <Link key={href} href={href} className="flex flex-1 flex-col items-center" aria-label={label}>
               {center ? (
@@ -68,22 +70,20 @@ export function Nav() {
           </Link>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-4">
-          {links
-            .filter((l) => !l.center)
-            .map(({ href, label, Icon, weight }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                  isActive(href)
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                }`}
-              >
-                <Icon size={22} weight={weight} />
-                {label}
-              </Link>
-            ))}
+          {links.filter((l) => !l.center).map(({ href, label, Icon, weight }) => (
+            <Link
+              key={href}
+              href={href}
+              className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+                isActive(href)
+                  ? 'bg-indigo-50 text-indigo-700'
+                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+            >
+              <Icon size={22} weight={weight} />
+              {label}
+            </Link>
+          ))}
         </nav>
         <div className="border-t border-slate-100 p-4">
           <Link
@@ -96,15 +96,6 @@ export function Nav() {
           >
             <PlusCircle size={22} weight="fill" />
             投稿する
-          </Link>
-          <Link
-            href="/profile"
-            className={`mt-2 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-medium ${
-              isActive('/profile') ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
-            }`}
-          >
-            <UserCircle size={22} weight="regular" />
-            プロフィール
           </Link>
         </div>
       </aside>
