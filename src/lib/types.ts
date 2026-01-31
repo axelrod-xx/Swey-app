@@ -79,6 +79,15 @@ export type Payout = {
   paid_at: string | null;
 };
 
+/** DB: public.likes (swipe: like / pass) */
+export type LikeRecord = {
+  id: string;
+  user_id: string;
+  photo_id: string;
+  action: 'like' | 'pass';
+  created_at: string;
+};
+
 /** DB: public.reports */
 export type Report = {
   id: string;

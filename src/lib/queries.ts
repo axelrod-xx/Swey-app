@@ -13,7 +13,48 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 /**
+ * スワイプ用: ランダムに1枚ずつ取得。viewerId 指定時は既に like/pass した写真を除外。
+ * デッキ用に複数枚取得する場合は limit を指定。
+ */
+export async function getSwipePhotos(
+  viewerId: string | null = null,
+  limit = 20,
+  excludePhotoIds: string[] = []
+): Promise<Photo[]> {
+  const supabase = getSupabase();
+  if (!supabase) return [];
+
+  let query = supabase
+    .from('photos')
+    .select('id, owner_id, image_url, elo_rating, access_type, tags, is_nsfw')
+    .eq('status', 'active')
+    .limit(limit * 3);
+
+  if (!viewerId) {
+    query = query.eq('access_type', 'free');
+  }
+
+  const { data: photos, error } = await query;
+  if (error || !photos || photos.length === 0) return [];
+
+  let typed = photos as Photo[];
+  let excludedIds = new Set(excludePhotoIds);
+
+  if (viewerId) {
+    const { data: likesData } = await supabase
+      .from('likes')
+      .select('photo_id')
+      .eq('user_id', viewerId);
+    (likesData || []).forEach((r) => excludedIds.add(r.photo_id));
+  }
+
+  typed = typed.filter((p) => !excludedIds.has(p.id));
+  return shuffle(typed).slice(0, limit);
+}
+
+/**
  * バトル用: レートが近い2枚をランダム取得。viewerId 未指定時は free のみ。
+ * @deprecated SwipeView に移行済み。互換のため残す。
  */
 export async function getRandomPhotos(viewerId: string | null = null): Promise<Photo[] | null> {
   const supabase = getSupabase();

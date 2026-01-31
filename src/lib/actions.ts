@@ -1,6 +1,6 @@
 'use server';
 
-import { createServerClient } from './supabase';
+import { createServerClient, createServiceRoleClient } from './supabase';
 import type { AccessType, PhotoTags } from './types';
 
 const K = 32;
@@ -60,6 +60,21 @@ export async function votePhoto(
     return { ok: false, error: '対戦記録の保存に失敗しました' };
   }
   return { ok: true };
+}
+
+/** スワイプ: LIKE または PASS を記録（Server Action では RLS をバイパスするため service_role 使用） */
+export async function likePhoto(
+  userId: string,
+  photoId: string,
+  action: 'like' | 'pass'
+) {
+  const supabase = createServiceRoleClient();
+  if (!supabase) return { ok: false, error: 'サーバー設定を確認してください' };
+  const { error } = await supabase.from('likes').upsert(
+    { user_id: userId, photo_id: photoId, action },
+    { onConflict: 'user_id,photo_id' }
+  );
+  return { ok: !error, error: error?.message };
 }
 
 const BUCKET = 'PHOTOS';

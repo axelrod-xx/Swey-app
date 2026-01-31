@@ -6,11 +6,11 @@ import { useRouter } from 'next/navigation';
 export default function TimelineRedirect() {
   const router = useRouter();
   useEffect(() => {
-    router.replace('/?tab=timeline');
+    router.replace('/');
   }, [router]);
   return (
-    <div className="flex min-h-[40vh] items-center justify-center bg-candy-cream">
-      <p className="text-candy-text">移動中...</p>
+    <div className="flex min-h-[40vh] items-center justify-center bg-white">
+      <p className="text-slate-500">移動中...</p>
     </div>
   );
 }

@@ -73,3 +73,22 @@ CREATE TRIGGER on_auth_user_created
 ```
 
 これにより、ログイン・サインアップ後に `profiles` にレコードが自動作成され、アプリ内のプロフィール表示やフォロー・DM 等が正しく動作します。
+
+---
+
+## likes テーブル（スワイプ記録）
+
+スワイプ（LIKE / PASS）機能を使うには、`supabase/migrations/20250126000000_create_likes.sql` を Supabase SQL Editor で実行するか、以下を手動で実行してください。
+
+```sql
+CREATE TABLE IF NOT EXISTS public.likes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  photo_id uuid NOT NULL REFERENCES public.photos(id) ON DELETE CASCADE,
+  action text NOT NULL CHECK (action IN ('like', 'pass')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(user_id, photo_id)
+);
+CREATE INDEX IF NOT EXISTS idx_likes_user_id ON public.likes(user_id);
+ALTER TABLE public.likes ENABLE ROW LEVEL SECURITY;
+```
