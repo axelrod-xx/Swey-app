@@ -3,40 +3,27 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --candy-cream: #FFFCF5;
-    --candy-peach: #FF9EAA;
-    --candy-mint: #87E3D3;
-    --candy-lavender: #C3B1E1;
-    --candy-text: #4A4458;
-  }
   body {
-    @apply bg-candy-cream text-candy-text antialiased;
-    font-family: var(--font-mplus-rounded), sans-serif;
+    @apply bg-slate-50 text-slate-900 antialiased;
   }
 }
 
-/* キャンディ・ポップ：ステッカー＆ゼリー */
-.candy-card {
-  @apply rounded-2xl border-[3px] border-candy-peach/40 bg-white shadow-candy-card;
-  box-shadow: 0 2px 0 0 rgba(0,0,0,0.05), 0 6px 16px -4px rgba(0,0,0,0.06);
+/* Luminous Modern - Cards */
+.modern-card {
+  @apply rounded-2xl border border-slate-100 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg;
 }
-.candy-btn {
-  @apply rounded-2xl font-medium transition;
+
+/* Primary button - gradient */
+.btn-primary {
+  @apply rounded-xl bg-gradient-to-br from-indigo-500 to-pink-500 px-6 py-3 font-semibold text-white shadow-md transition-all hover:shadow-lg hover:opacity-95 active:scale-[0.98];
 }
-.candy-btn.jelly-pink {
-  @apply border-[3px] border-[#e88a96] bg-candy-peach text-white shadow-candy-jelly;
+
+/* Secondary button */
+.btn-secondary {
+  @apply rounded-xl border border-slate-200 bg-white px-6 py-3 font-medium text-slate-900 transition-colors hover:bg-slate-50 active:scale-[0.98];
 }
-.candy-btn.jelly-pink:active {
-  transform: scale(0.98);
-  box-shadow: 0 1px 0 0 rgba(0,0,0,0.08);
-}
-.candy-btn.jelly-outline {
-  @apply border-[3px] border-candy-lavender bg-white text-candy-text shadow-candy-card;
-}
-.candy-btn.jelly-outline:active {
-  transform: scale(0.98);
-}
-.candy-input {
-  @apply rounded-xl border-[3px] border-candy-lavender/60 bg-white px-4 py-3 text-candy-text placeholder:text-candy-text/40 focus:border-candy-peach focus:outline-none focus:ring-2 focus:ring-candy-peach/20;
+
+/* Input */
+.modern-input {
+  @apply rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20;
 }

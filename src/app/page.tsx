@@ -8,6 +8,7 @@ import { getRandomPhotos, getBulkPhotoAccess, getTimelinePhotos, getFeaturedBatt
 import { votePhoto } from '@/lib/actions';
 import { PhotoWithAccess } from '@/components/PhotoWithAccess';
 import { useAuth } from '@/contexts/AuthContext';
+import { ImageSquare } from '@phosphor-icons/react';
 import type { Photo } from '@/lib/types';
 
 const springBouncy = { type: 'spring' as const, stiffness: 400, damping: 28 };
@@ -21,7 +22,7 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
   const [loading, setLoading] = useState(true);
   const [empty, setEmpty] = useState(false);
   const [swiping, setSwiping] = useState(false);
-  const [hearts, setHearts] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [votes, setVotes] = useState<{ id: number; x: number; y: number }[]>([]);
 
   const y = useMotionValue(0);
   const topControls = useAnimation();
@@ -56,14 +57,14 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
     getBulkPhotoAccess(userId, [topPhoto, bottomPhoto]).then(setAccessMap);
   }, [topPhoto, bottomPhoto, userId]);
 
-  function triggerHearts() {
-    const newHearts = Array.from({ length: 6 }, (_, i) => ({
+  function triggerVoteFeedback() {
+    const newVotes = Array.from({ length: 4 }, (_, i) => ({
       id: Date.now() + i,
-      x: Math.random() * 80 - 40,
-      y: Math.random() * -60 - 20,
+      x: Math.random() * 60 - 30,
+      y: Math.random() * -50 - 15,
     }));
-    setHearts(newHearts);
-    setTimeout(() => setHearts([]), 800);
+    setVotes(newVotes);
+    setTimeout(() => setVotes([]), 600);
   }
 
   async function handleUnlock(photo: Photo) {
@@ -110,7 +111,7 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
 
       const isSwipingDown = info.offset.y > 0;
       setSwiping(true);
-      if (userId) triggerHearts();
+      if (userId) triggerVoteFeedback();
 
       if (isSwipingDown) {
         topControls.start({ y: screenHeight / 2, transition: springBouncy });
@@ -148,9 +149,9 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <motion.p
-          animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
-          transition={{ repeat: Infinity, duration: 1.2 }}
-          className="text-candy-text font-medium"
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="text-slate-500"
         >
           読み込み中...
         </motion.p>
@@ -160,9 +161,12 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
 
   if (empty) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-8 px-6 text-center">
-        <p className="text-candy-text font-medium">写真がまだないよ。投稿をお待ちしてます💕</p>
-        <Link href="/upload" className="candy-btn jelly-pink px-8 py-4 text-lg font-bold">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 px-6 text-center">
+        <p className="flex items-center justify-center gap-2 text-slate-600">
+          <ImageSquare size={24} weight="regular" className="text-slate-400" />
+          写真がまだありません。投稿をお待ちしています
+        </p>
+        <Link href="/upload" className="btn-primary">
           投稿する
         </Link>
       </div>
@@ -172,23 +176,23 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
   if (!topPhoto || !bottomPhoto) return null;
 
   return (
-    <div className="relative h-[calc(100vh-8rem)] w-full overflow-hidden rounded-t-3xl sm:mx-auto sm:max-w-lg">
+    <div className="relative h-[calc(100vh-10rem)] w-full overflow-hidden rounded-2xl sm:mx-auto sm:max-w-lg">
       <AnimatePresence>
-        {hearts.map((h) => (
+        {votes.map((h) => (
           <motion.span
             key={h.id}
             initial={{ opacity: 1, x: 0, y: 0 }}
             animate={{ opacity: 0, x: h.x, y: h.y }}
-            transition={{ duration: 0.7 }}
-            className="pointer-events-none absolute left-1/2 top-1/2 z-30 text-2xl"
+            transition={{ duration: 0.5 }}
+            className="pointer-events-none absolute left-1/2 top-1/2 z-30"
           >
-            💕
+            <span className="text-lg font-bold text-indigo-500">✓</span>
           </motion.span>
         ))}
       </AnimatePresence>
 
       <motion.div
-        className="absolute top-0 left-0 h-1/2 w-full overflow-hidden rounded-b-3xl border-[3px] border-candy-peach/30 bg-white shadow-candy-card"
+        className="absolute top-0 left-0 h-1/2 w-full overflow-hidden rounded-b-2xl border border-slate-100 bg-white shadow-sm"
         animate={topControls}
         style={{ y }}
       >
@@ -201,7 +205,7 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-0 left-0 h-1/2 w-full overflow-hidden rounded-t-3xl border-[3px] border-candy-peach/30 bg-white shadow-candy-card"
+        className="absolute bottom-0 left-0 h-1/2 w-full overflow-hidden rounded-t-2xl border border-slate-100 bg-white shadow-sm"
         animate={bottomControls}
         style={{ y }}
       >
@@ -224,7 +228,7 @@ function BattleTab({ onNeedLogin }: { onNeedLogin: () => void }) {
         <div className="h-full w-full" />
       </motion.div>
 
-      <div className="pointer-events-none absolute left-0 top-1/2 z-20 h-1 w-full -translate-y-1/2 rounded-full bg-white/70 shadow-lg" />
+      <div className="pointer-events-none absolute left-0 top-1/2 z-20 h-px w-full -translate-y-1/2 bg-slate-200/80" />
     </div>
   );
 }
@@ -291,14 +295,16 @@ function TimelineTabContent({ onNeedLogin }: { onNeedLogin: () => void }) {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="candy-card mb-6 p-6 text-center"
+          className="modern-card mb-6 p-6 text-center"
         >
-          <p className="mb-4 text-candy-text">ログインするとフォロー中の投稿がここに表示されるよ💕</p>
+          <p className="mb-4 text-slate-600">
+            ログインするとフォロー中の投稿がここに表示されます
+          </p>
           <motion.button
             type="button"
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.98 }}
             onClick={onNeedLogin}
-            className="candy-btn jelly-pink px-6 py-3 font-bold"
+            className="btn-primary"
           >
             ログインする
           </motion.button>
@@ -311,9 +317,9 @@ function TimelineTabContent({ onNeedLogin }: { onNeedLogin: () => void }) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <motion.p
-          animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
-          transition={{ repeat: Infinity, duration: 1.2 }}
-          className="text-candy-text font-medium"
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="text-slate-500"
         >
           読み込み中...
         </motion.p>
@@ -331,7 +337,7 @@ function TimelineTabContent({ onNeedLogin }: { onNeedLogin: () => void }) {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="candy-card overflow-hidden"
+              className="modern-card overflow-hidden"
             >
               <div className="relative aspect-[4/5] w-full">
                 <PhotoWithAccess
@@ -342,11 +348,11 @@ function TimelineTabContent({ onNeedLogin }: { onNeedLogin: () => void }) {
                   href={`/profile/${photo.owner_id}`}
                 />
               </div>
-              <div className="flex items-center justify-between p-3">
-                <span className="font-mono font-bold text-candy-peach">Elo {photo.elo_rating}</span>
+              <div className="flex items-center justify-between p-4">
+                <span className="font-mono text-sm font-semibold text-indigo-600">Elo {photo.elo_rating}</span>
                 <Link
                   href={`/profile/${photo.owner_id}`}
-                  className="rounded-xl border-2 border-candy-lavender/50 px-3 py-1.5 text-xs font-medium text-candy-text"
+                  className="btn-secondary px-3 py-1.5 text-sm"
                 >
                   投稿者
                 </Link>
@@ -355,12 +361,12 @@ function TimelineTabContent({ onNeedLogin }: { onNeedLogin: () => void }) {
           ))}
         </ul>
       ) : (
-        <p className="mb-10 text-candy-text/70">フォロー中の投稿はまだないよ。</p>
+        <p className="mb-10 text-slate-500">フォロー中の投稿はまだありません。</p>
       )}
 
-      <h2 className="mb-4 text-lg font-bold text-candy-text">注目のバトル</h2>
+      <h2 className="mb-4 text-lg font-bold text-slate-900">注目のバトル</h2>
       {featured.length === 0 ? (
-        <p className="text-candy-text/70">まだバトル記録がないよ。</p>
+        <p className="text-slate-500">まだバトル記録がありません。</p>
       ) : (
         <ul className="space-y-3">
           {featured.map((b, i) => (
@@ -369,7 +375,7 @@ function TimelineTabContent({ onNeedLogin }: { onNeedLogin: () => void }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: i * 0.05 }}
-              className="candy-card px-4 py-3 text-sm text-candy-text"
+              className="modern-card px-4 py-3 text-sm text-slate-600"
             >
               対戦記録（勝者 / 敗者）
             </motion.li>
@@ -390,17 +396,17 @@ function HomeContent() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-candy-cream">
-      <div className="mx-auto max-w-lg">
-        <div className="flex gap-1 rounded-2xl border-[3px] border-candy-lavender/50 bg-white p-1.5 shadow-candy-card">
+    <div className="min-h-screen bg-slate-50">
+      <div className="mx-auto max-w-lg px-4 pt-6">
+        <div className="flex gap-1 rounded-xl border border-slate-100 bg-white p-1 shadow-sm">
           <motion.button
             type="button"
             whileTap={{ scale: 0.98 }}
             onClick={() => setTab('battle')}
-            className={`flex-1 rounded-xl py-2.5 text-sm font-bold transition ${
+            className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition ${
               tab === 'battle'
-                ? 'bg-candy-peach text-white shadow-candy-jelly'
-                : 'text-candy-text/70'
+                ? 'bg-gradient-to-br from-indigo-500 to-pink-500 text-white shadow-md'
+                : 'text-slate-500'
             }`}
           >
             バトル
@@ -408,20 +414,18 @@ function HomeContent() {
           <motion.button
             type="button"
             whileTap={{ scale: 0.98 }}
-            onClick={() => {
-              setTab('timeline');
-            }}
-            className={`flex-1 rounded-xl py-2.5 text-sm font-bold transition ${
+            onClick={() => setTab('timeline')}
+            className={`flex-1 rounded-lg py-2.5 text-sm font-semibold transition ${
               tab === 'timeline'
-                ? 'bg-candy-mint text-white shadow-candy-jelly'
-                : 'text-candy-text/70'
+                ? 'bg-gradient-to-br from-indigo-500 to-pink-500 text-white shadow-md'
+                : 'text-slate-500'
             }`}
           >
             タイムライン
           </motion.button>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-6">
           {tab === 'battle' ? (
             <BattleTab onNeedLogin={openLoginModal} />
           ) : (
@@ -435,7 +439,11 @@ function HomeContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center bg-candy-cream"><p className="text-candy-text">読み込み中...</p></div>}>
+    <Suspense fallback={
+      <div className="flex min-h-[40vh] items-center justify-center bg-slate-50">
+        <p className="text-slate-500">読み込み中...</p>
+      </div>
+    }>
       <HomeContent />
     </Suspense>
   );

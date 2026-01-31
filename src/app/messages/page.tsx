@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { ChatCircle } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getMessagePartners, getMessages } from '@/lib/queries';
 import { sendMessage } from '@/lib/actions';
@@ -49,8 +50,8 @@ export default function MessagesPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-candy-cream">
-        <p className="text-candy-text">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <p className="text-slate-500">読み込み中...</p>
       </div>
     );
   }
@@ -61,19 +62,22 @@ export default function MessagesPage() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="candy-card max-w-sm p-8"
+          className="modern-card max-w-sm p-8"
         >
-          <p className="mb-2 text-xl font-bold text-candy-text">ログインしてメッセージを送ろう 💌</p>
-          <p className="mb-6 text-sm text-candy-text/70">DM はログイン後に利用できます</p>
+          <p className="mb-2 flex items-center justify-center gap-2 text-xl font-bold text-slate-900">
+            <ChatCircle size={26} weight="regular" className="text-slate-400" />
+            ログインしてメッセージを送ろう
+          </p>
+          <p className="mb-6 text-sm text-slate-500">DM はログイン後に利用できます</p>
           <motion.button
             type="button"
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.98 }}
             onClick={openLoginModal}
-            className="candy-btn jelly-pink w-full py-4 font-bold"
+            className="btn-primary w-full py-4"
           >
             ログインする
           </motion.button>
-          <Link href="/" className="mt-4 block text-sm font-medium text-candy-peach underline">
+          <Link href="/" className="mt-4 block text-sm font-medium text-indigo-600 hover:underline">
             トップへ戻る
           </Link>
         </motion.div>
@@ -82,11 +86,14 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-lg flex-col bg-candy-cream sm:h-[calc(100vh-4rem)] sm:flex-row">
-      <aside className="w-full border-b-[3px] border-candy-lavender/50 bg-white/90 sm:w-64 sm:border-b-0 sm:border-r-[3px] sm:border-candy-lavender/50">
-        <h1 className="border-b-[3px] border-candy-lavender/50 p-4 text-lg font-bold text-candy-text">DM 💌</h1>
+    <div className="mx-auto flex max-w-lg flex-col bg-slate-50 sm:h-[calc(100vh-6rem)] sm:flex-row">
+      <aside className="w-full border-b border-slate-200 bg-white sm:w-64 sm:border-b-0 sm:border-r sm:border-slate-200">
+        <h1 className="flex items-center gap-2 border-b border-slate-100 p-4 text-lg font-bold text-slate-900">
+          <ChatCircle size={22} weight="regular" className="text-slate-400" />
+          DM
+        </h1>
         {partners.length === 0 ? (
-          <p className="p-4 text-sm text-candy-text/70">メッセージのやり取りがあるユーザーがいないよ。</p>
+          <p className="p-4 text-sm text-slate-500">メッセージのやり取りがあるユーザーがいません。</p>
         ) : (
           <ul>
             {partners.map((p) => (
@@ -96,8 +103,8 @@ export default function MessagesPage() {
                   onClick={() => setSelectedId(p.id)}
                   className={`w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition ${
                     selectedId === p.id
-                      ? 'border-2 border-candy-peach bg-candy-peach/15 text-candy-peach'
-                      : 'text-candy-text hover:bg-candy-lavender/20'
+                      ? 'border border-indigo-200 bg-indigo-50 text-indigo-700'
+                      : 'text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   {p.display_name || p.id.slice(0, 8)}
@@ -107,17 +114,17 @@ export default function MessagesPage() {
           </ul>
         )}
       </aside>
-      <div className="flex flex-1 flex-col bg-candy-cream">
+      <div className="flex flex-1 flex-col bg-slate-50">
         {selectedId ? (
           <>
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
               {messages.map((m) => (
                 <div key={m.id} className={`flex ${m.sender_id === userId ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[80%] rounded-2xl border-2 px-4 py-2.5 text-sm ${
+                    className={`max-w-[80%] rounded-xl border px-4 py-2.5 text-sm ${
                       m.sender_id === userId
-                        ? 'border-candy-peach/50 bg-candy-peach text-white'
-                        : 'border-candy-lavender/50 bg-white text-candy-text'
+                        ? 'border-indigo-200 bg-gradient-to-br from-indigo-500 to-pink-500 text-white'
+                        : 'border-slate-200 bg-white text-slate-900'
                     }`}
                   >
                     {m.content}
@@ -125,22 +132,22 @@ export default function MessagesPage() {
                 </div>
               ))}
             </div>
-            <form onSubmit={handleSend} className="flex gap-2 border-t-[3px] border-candy-lavender/50 bg-white/80 p-4">
+            <form onSubmit={handleSend} className="flex gap-2 border-t border-slate-200 bg-white/80 p-4 backdrop-blur-sm">
               <input
                 type="text"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="メッセージ..."
-                className="candy-input flex-1"
+                className="modern-input flex-1"
               />
-              <motion.button type="submit" whileTap={{ scale: 0.97 }} className="candy-btn jelly-pink px-4 py-2.5 text-sm font-bold">
+              <motion.button type="submit" whileTap={{ scale: 0.98 }} className="btn-primary px-4 py-2.5 text-sm">
                 送信
               </motion.button>
             </form>
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-candy-text/70">
-            ユーザーを選んでね
+          <div className="flex flex-1 items-center justify-center text-slate-500">
+            ユーザーを選択してください
           </div>
         )}
       </div>

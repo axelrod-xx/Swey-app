@@ -10,21 +10,16 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        rounded: ["var(--font-mplus-rounded)", "sans-serif"],
+        sans: ["var(--font-plus-jakarta)", "var(--font-noto-sans)", "sans-serif"],
       },
       colors: {
-        candy: {
-          cream: "#FFFCF5",
-          peach: "#FF9EAA",
-          mint: "#87E3D3",
-          lavender: "#C3B1E1",
-          text: "#4A4458",
-          textDark: "#2D2838",
+        accent: {
+          indigo: "#6366f1",
+          pink: "#ec4899",
         },
       },
-      boxShadow: {
-        "candy-jelly": "0 4px 0 0 rgba(0,0,0,0.08), 0 6px 12px -2px rgba(255,158,170,0.2)",
-        "candy-card": "0 3px 0 0 rgba(0,0,0,0.06), 0 6px 16px -4px rgba(0,0,0,0.06)",
+      backgroundImage: {
+        "gradient-electric": "linear-gradient(135deg, #6366f1 0%, #ec4899 100%)",
       },
     },
   },

@@ -39,3 +39,37 @@ UPDATE profiles SET is_admin = true WHERE id = 'ここに NEXT_PUBLIC_ANONYMOUS_
 ```
 
 本番で認証を入れる場合は、上記の代わりにセッションの `user.id` を渡す形に差し替えてください。
+
+---
+
+## Supabase Auth と profiles の自動作成
+
+メール/パスワードやソーシャルログインでサインアップしたユーザーを `profiles` テーブルで扱うには、**Supabase の Database でトリガーを設定**し、`auth.users` に新規ユーザーが追加されたタイミングで `profiles` に1行挿入する必要があります。
+
+**Supabase Dashboard → SQL Editor** で以下を実行してください。
+
+```sql
+-- auth.users に新規ユーザーが作成されたら profiles に1行挿入する関数
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.profiles (id, display_name, avatar_url, created_at, updated_at)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', split_part(NEW.email, '@', 1)),
+    NEW.raw_user_meta_data->>'avatar_url',
+    NOW(),
+    NOW()
+  );
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- auth.users の INSERT に紐づけるトリガー
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+```
+
+これにより、ログイン・サインアップ後に `profiles` にレコードが自動作成され、アプリ内のプロフィール表示やフォロー・DM 等が正しく動作します。

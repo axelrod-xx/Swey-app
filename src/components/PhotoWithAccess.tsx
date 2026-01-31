@@ -18,21 +18,21 @@ export function PhotoWithAccess({ photo, canView, variant = 'full', onUnlockClic
   const isPaid = photo.access_type === 'paid';
 
   const overlay = !canView && (
-    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-black/50 p-4 backdrop-blur-md">
-      <p className="text-center text-sm font-bold text-white drop-shadow">
+    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-2xl bg-black/60 p-4 backdrop-blur-md">
+      <p className="text-center text-sm font-semibold text-white">
         {isFollowerOnly ? 'フォローすると見られます' : isPaid ? 'サブスク or 購入で見られます' : '閲覧できません'}
       </p>
       {isPaid && (
         <button
           type="button"
           onClick={() => onUnlockClick?.(photo)}
-          className="candy-btn jelly-pink px-5 py-2.5 text-sm font-bold"
+          className="btn-primary px-5 py-2.5 text-sm"
         >
           アンロック
         </button>
       )}
       {isFollowerOnly && href && (
-        <Link href={href} className="candy-btn jelly-outline px-5 py-2.5 text-sm font-bold text-candy-text">
+        <Link href={href} className="btn-secondary px-5 py-2.5 text-sm">
           フォローして見る
         </Link>
       )}
@@ -61,13 +61,10 @@ export function PhotoWithAccess({ photo, canView, variant = 'full', onUnlockClic
     );
   }
 
-  const wrapperClass = variant === 'thumb'
-    ? 'relative aspect-square overflow-hidden rounded-2xl border-2 border-candy-peach/30 bg-white shadow-candy-card'
-    : 'relative aspect-[4/5] w-full overflow-hidden rounded-2xl border-2 border-candy-peach/30 bg-white shadow-candy-card';
+  const wrapperClass =
+    variant === 'thumb'
+      ? 'relative aspect-square overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm'
+      : 'relative aspect-[4/5] w-full overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm';
 
-  return (
-    <div className={wrapperClass}>
-      {content}
-    </div>
-  );
+  return <div className={wrapperClass}>{content}</div>;
 }

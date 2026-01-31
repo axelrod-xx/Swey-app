@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { CloudArrowUp } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { uploadPhoto } from '@/lib/actions';
 import { toast } from 'sonner';
@@ -17,19 +18,22 @@ export default function UploadPage() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="candy-card max-w-sm p-8"
+          className="modern-card max-w-sm p-8"
         >
-          <p className="mb-2 text-xl font-bold text-candy-text">ログインして投稿しよう 💖</p>
-          <p className="mb-6 text-sm text-candy-text/70">写真の投稿はログイン後に利用できます</p>
+          <p className="mb-2 flex items-center justify-center gap-2 text-xl font-bold text-slate-900">
+            <CloudArrowUp size={26} weight="regular" className="text-slate-400" />
+            ログインして投稿しよう
+          </p>
+          <p className="mb-6 text-sm text-slate-500">写真の投稿はログイン後に利用できます</p>
           <motion.button
             type="button"
-            whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.98 }}
             onClick={openLoginModal}
-            className="candy-btn jelly-pink w-full py-4 font-bold"
+            className="btn-primary w-full py-4"
           >
             ログインする
           </motion.button>
-          <Link href="/" className="mt-4 block text-sm font-medium text-candy-peach underline">
+          <Link href="/" className="mt-4 block text-sm font-medium text-indigo-600 hover:underline">
             トップへ戻る
           </Link>
         </motion.div>
@@ -55,7 +59,7 @@ export default function UploadPage() {
     try {
       const result = await uploadPhoto(formData);
       if (result.ok) {
-        toast.success('アップロードしたよ！💕');
+        toast.success('アップロードしました');
         form.reset();
       } else {
         toast.error(result.error || 'アップロードに失敗しました');
@@ -66,39 +70,42 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md bg-candy-cream px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-candy-text">写真を投稿 💖</h1>
+    <div className="mx-auto max-w-md px-4 py-8">
+      <h1 className="mb-6 flex items-center gap-2 text-2xl font-bold text-slate-900">
+        <CloudArrowUp size={28} weight="regular" className="text-slate-400" />
+        写真を投稿
+      </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-candy-text">画像ファイル</span>
+          <span className="mb-2 block text-sm font-medium text-slate-700">画像ファイル</span>
           <input
             type="file"
             name="file"
             accept="image/*"
             required
             disabled={uploading}
-            className="candy-input block w-full file:mr-4 file:rounded-xl file:border-0 file:border-candy-peach file:bg-candy-peach file:px-4 file:py-2 file:font-medium file:text-white file:transition hover:file:opacity-90"
+            className="modern-input block w-full file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-4 file:py-2 file:font-medium file:text-white file:transition hover:file:bg-indigo-700"
           />
         </label>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-candy-text/80">部位</span>
-            <input type="text" name="part" className="candy-input w-full py-2 text-sm" placeholder="例: 目" />
+            <span className="mb-1 block text-xs font-medium text-slate-600">部位</span>
+            <input type="text" name="part" className="modern-input w-full py-2 text-sm" placeholder="例: 目" />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-candy-text/80">作品名</span>
-            <input type="text" name="title" className="candy-input w-full py-2 text-sm" placeholder="例: 〇〇の〇" />
+            <span className="mb-1 block text-xs font-medium text-slate-600">作品名</span>
+            <input type="text" name="title" className="modern-input w-full py-2 text-sm" placeholder="例: 〇〇の〇" />
           </label>
           <label className="block">
-            <span className="mb-1 block text-xs font-medium text-candy-text/80">キャラ名</span>
-            <input type="text" name="character" className="candy-input w-full py-2 text-sm" placeholder="例: キャラ名" />
+            <span className="mb-1 block text-xs font-medium text-slate-600">キャラ名</span>
+            <input type="text" name="character" className="modern-input w-full py-2 text-sm" placeholder="例: キャラ名" />
           </label>
         </div>
 
         <label className="block">
-          <span className="mb-2 block text-sm font-medium text-candy-text">公開範囲</span>
-          <select name="access_type" className="candy-input w-full">
+          <span className="mb-2 block text-sm font-medium text-slate-700">公開範囲</span>
+          <select name="access_type" className="modern-input w-full">
             <option value="free">誰でも</option>
             <option value="follower">フォロワーのみ</option>
             <option value="paid">サブスクのみ</option>
@@ -106,15 +113,15 @@ export default function UploadPage() {
         </label>
 
         <label className="flex items-center gap-2">
-          <input type="checkbox" name="is_nsfw" value="true" className="h-4 w-4 rounded border-2 border-candy-lavender text-candy-peach" />
-          <span className="text-sm text-candy-text">NSFW（センシティブ）</span>
+          <input type="checkbox" name="is_nsfw" value="true" className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+          <span className="text-sm text-slate-700">NSFW（センシティブ）</span>
         </label>
 
         <motion.button
           type="submit"
           disabled={uploading}
           whileTap={{ scale: 0.98 }}
-          className="candy-btn jelly-pink w-full py-4 font-bold disabled:opacity-50"
+          className="btn-primary w-full py-4 disabled:opacity-50"
         >
           {uploading ? 'アップロード中...' : 'アップロード'}
         </motion.button>

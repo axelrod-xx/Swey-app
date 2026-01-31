@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Trophy } from '@phosphor-icons/react';
 import { getTopRanking } from '@/lib/queries';
 import type { Photo } from '@/lib/types';
 
 const TAG_CATEGORIES = [
-  { value: '', label: 'すべて', color: 'bg-candy-peach border-candy-peach' },
-  { value: 'part', label: '部位', color: 'bg-candy-mint border-candy-mint' },
-  { value: 'title', label: '作品名', color: 'bg-candy-lavender border-candy-lavender' },
-  { value: 'character', label: 'キャラ名', color: 'bg-candy-peach/80 border-candy-peach/80' },
+  { value: '', label: 'すべて' },
+  { value: 'part', label: '部位' },
+  { value: 'title', label: '作品名' },
+  { value: 'character', label: 'キャラ名' },
 ];
 
 export default function RankingPage() {
@@ -28,25 +29,28 @@ export default function RankingPage() {
   }, [tagCategory]);
 
   return (
-    <div className="mx-auto max-w-lg bg-candy-cream px-4 py-8">
+    <div className="mx-auto max-w-lg px-4 py-8">
       <motion.h1
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-        className="mb-6 text-2xl font-bold text-candy-text"
+        className="mb-6 flex items-center gap-2 text-2xl font-bold text-slate-900"
       >
-        総合ランキング Top 10 🏆
+        <Trophy size={28} weight="regular" className="text-slate-400" />
+        総合ランキング Top 10
       </motion.h1>
 
       <div className="mb-6 flex flex-wrap gap-2">
-        {TAG_CATEGORIES.map(({ value, label, color }) => (
+        {TAG_CATEGORIES.map(({ value, label }) => (
           <motion.button
             key={value || 'all'}
             type="button"
             whileTap={{ scale: 0.97 }}
             onClick={() => setTagCategory(value)}
-            className={`rounded-2xl border-[3px] px-4 py-2 text-sm font-medium shadow-candy-card transition ${
-              tagCategory === value ? `${color} text-white` : 'border-candy-lavender/50 bg-white text-candy-text hover:bg-candy-lavender/15'
+            className={`rounded-xl border px-4 py-2 text-sm font-medium transition ${
+              tagCategory === value
+                ? 'border-indigo-300 bg-gradient-to-br from-indigo-500 to-pink-500 text-white shadow-md'
+                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >
             {label}
@@ -56,45 +60,49 @@ export default function RankingPage() {
 
       {loading ? (
         <motion.p
-          animate={{ scale: [1, 1.05, 1], opacity: [0.7, 1, 0.7] }}
-          transition={{ repeat: Infinity, duration: 1.2 }}
-          className="text-candy-text font-medium"
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+          className="text-slate-500"
         >
           読み込み中...
         </motion.p>
       ) : !list?.length ? (
-        <p className="text-candy-text/70">まだデータがないよ。</p>
+        <p className="text-slate-500">まだデータがありません。</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-3">
           {list.map((photo, i) => (
             <motion.li
               key={photo.id}
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="candy-card flex items-center gap-4 p-4"
+              className="modern-card flex items-center gap-4 p-4"
             >
               <span
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-[3px] text-lg font-bold text-white ${
-                  i === 0 ? 'border-candy-peach/80 bg-candy-peach' : i === 1 ? 'border-candy-mint/80 bg-candy-mint' : 'border-candy-lavender/50 bg-candy-lavender/40 text-candy-text'
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-lg font-bold ${
+                  i === 0
+                    ? 'bg-gradient-to-br from-indigo-500 to-pink-500 text-white'
+                    : i === 1
+                    ? 'bg-slate-200 text-slate-700'
+                    : 'bg-slate-100 text-slate-600'
                 }`}
               >
                 {i + 1}
               </span>
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-candy-lavender/40">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-100">
                 <Image src={photo.image_url} alt={`#${i + 1}`} fill className="object-cover" sizes="64px" unoptimized />
               </div>
               <div className="min-w-0 flex-1">
-                <span className="font-mono font-bold text-candy-peach">Elo {photo.elo_rating}</span>
+                <span className="font-mono text-sm font-semibold text-indigo-600">Elo {photo.elo_rating}</span>
                 {photo.tags && (photo.tags.part || photo.tags.title || photo.tags.character) && (
-                  <p className="truncate text-xs text-candy-text/70">
+                  <p className="truncate text-xs text-slate-500">
                     {[photo.tags.part, photo.tags.title, photo.tags.character].filter(Boolean).join(' / ')}
                   </p>
                 )}
               </div>
               <Link
                 href={`/profile/${photo.owner_id}`}
-                className="rounded-xl border-2 border-candy-mint/60 px-3 py-1.5 text-xs font-medium text-candy-mint"
+                className="btn-secondary px-3 py-1.5 text-xs"
               >
                 投稿者
               </Link>

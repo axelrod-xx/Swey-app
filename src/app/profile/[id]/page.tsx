@@ -138,17 +138,17 @@ export default function ProfileIdPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-candy-cream">
-        <p className="text-candy-text">読み込み中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <p className="text-slate-500">読み込み中...</p>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="mx-auto max-w-lg bg-candy-cream px-4 py-12 text-center">
-        <p className="text-candy-text/80">ユーザーが見つからないよ。</p>
-        <Link href="/" className="mt-4 inline-block candy-btn jelly-pink px-6 py-3 font-bold">
+      <div className="mx-auto max-w-lg px-4 py-12 text-center">
+        <p className="text-slate-600">ユーザーが見つかりません。</p>
+        <Link href="/" className="btn-primary mt-4 inline-block px-6 py-3">
           ホームへ
         </Link>
       </div>
@@ -156,33 +156,31 @@ export default function ProfileIdPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg bg-candy-cream px-4 py-8">
+    <div className="mx-auto max-w-lg px-4 py-8">
       {(justSubscribed || justUnlocked) && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          className="candy-card mb-4 p-4 text-center"
+          className="modern-card mb-4 p-4 text-center"
         >
-          <p className="font-bold text-candy-text">
-            {justSubscribed ? '🎉 サブスク登録ありがとう！' : '🔓 アンロック完了！'}
+          <p className="font-semibold text-slate-900">
+            {justSubscribed ? 'サブスク登録ありがとうございます' : 'アンロック完了'}
           </p>
         </motion.div>
       )}
-      <div className="candy-card mb-6 flex items-center gap-4 p-4">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border-[3px] border-candy-lavender/50 bg-candy-lavender/30">
+      <div className="modern-card mb-6 flex items-center gap-4 p-4">
+        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-2xl border border-slate-100 bg-slate-100">
           {profile.avatar_url ? (
             <Image src={profile.avatar_url} alt="" fill className="object-cover" unoptimized />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-2xl text-candy-text/50">?</div>
+            <div className="flex h-full w-full items-center justify-center text-xl text-slate-400">?</div>
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-lg font-bold text-candy-text">
-            {profile.display_name || '名無し'}
-          </h1>
-          <p className="font-mono text-sm font-bold text-candy-peach">Elo {profile.elo_rating}</p>
-          <p className="text-xs text-candy-text/70">フォロワー {followerCount}</p>
+          <h1 className="truncate text-lg font-bold text-slate-900">{profile.display_name || '名無し'}</h1>
+          <p className="font-mono text-sm font-semibold text-indigo-600">Elo {profile.elo_rating}</p>
+          <p className="text-xs text-slate-500">フォロワー {followerCount}</p>
         </div>
       </div>
 
@@ -193,7 +191,7 @@ export default function ProfileIdPage() {
               type="button"
               whileTap={{ scale: 0.97 }}
               onClick={handleFollow}
-              className="candy-btn jelly-pink px-4 py-2 text-sm font-bold"
+              className="btn-primary px-4 py-2 text-sm"
             >
               フォロー
             </motion.button>
@@ -201,7 +199,7 @@ export default function ProfileIdPage() {
               type="button"
               whileTap={{ scale: 0.97 }}
               onClick={handleUnfollow}
-              className="candy-btn jelly-outline px-4 py-2 text-sm font-medium"
+              className="btn-secondary px-4 py-2 text-sm"
             >
               フォロー解除
             </motion.button>
@@ -209,20 +207,20 @@ export default function ProfileIdPage() {
               type="button"
               whileTap={{ scale: 0.97 }}
               onClick={handleSubscribe}
-              className="rounded-2xl border-[3px] border-candy-mint bg-candy-mint/15 px-4 py-2 text-sm font-medium text-candy-mint shadow-candy-card"
+              className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
             >
               サブスク
             </motion.button>
           </>
         )}
-        <Link href="/messages" className="candy-btn jelly-outline px-4 py-2 text-sm font-medium">
+        <Link href="/messages" className="btn-secondary px-4 py-2 text-sm">
           DM
         </Link>
       </div>
 
-      <h2 className="mb-4 text-sm font-bold text-candy-text">投稿一覧</h2>
+      <h2 className="mb-4 text-sm font-bold text-slate-900">投稿一覧</h2>
       {!photos?.length ? (
-        <p className="text-candy-text/70">まだ投稿がないよ。</p>
+        <p className="text-slate-500">まだ投稿がありません。</p>
       ) : (
         <ul className="grid grid-cols-3 gap-2">
           {photos.map((photo) => (
@@ -234,14 +232,14 @@ export default function ProfileIdPage() {
                 onUnlockClick={handleUnlock}
                 href={`/profile/${id}`}
               />
-              <span className="absolute bottom-1 left-1 z-20 rounded-xl bg-black/60 px-1.5 py-0.5 font-mono text-xs font-bold text-candy-peach">
+              <span className="absolute bottom-1 left-1 z-20 rounded-lg bg-black/70 px-1.5 py-0.5 font-mono text-xs font-semibold text-white">
                 {photo.elo_rating}
               </span>
               {CURRENT_USER_ID && id !== CURRENT_USER_ID && (
                 <button
                   type="button"
                   onClick={() => handleReport(photo)}
-                  className="absolute bottom-1 right-1 z-20 rounded-lg bg-black/50 px-1.5 py-0.5 text-[10px] text-white hover:bg-black/70"
+                  className="absolute bottom-1 right-1 z-20 rounded-lg bg-black/60 px-1.5 py-0.5 text-[10px] text-white hover:bg-black/80"
                 >
                   通報
                 </button>

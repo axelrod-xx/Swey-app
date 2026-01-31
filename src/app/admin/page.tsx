@@ -8,7 +8,7 @@ import { getProfile } from '@/lib/queries';
 import { getAdminStats, getUsersForAdmin, getPhotosForAdmin, getReportsForAdmin } from '@/lib/queries';
 import { adminBanUser, adminUnbanUser, adminHidePhoto, adminResolveReport } from '@/lib/actions';
 import { toast } from 'sonner';
-import { BarChart3, Users, ImageIcon, Flag, Shield } from 'lucide-react';
+import { ChartBar, Users, ImageIcon, Flag, Shield } from '@phosphor-icons/react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function AdminPage() {
@@ -73,17 +73,17 @@ export default function AdminPage() {
 
   if (allowed === null) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-candy-cream">
-        <p className="text-candy-text">確認中...</p>
+      <div className="flex min-h-screen items-center justify-center bg-slate-50">
+        <p className="text-slate-500">確認中...</p>
       </div>
     );
   }
 
   if (!allowed) {
     return (
-      <div className="mx-auto max-w-lg bg-candy-cream px-4 py-12 text-center">
-        <p className="text-candy-text/80">このページにアクセスする権限がありません。</p>
-        <Link href="/" className="mt-4 inline-block candy-btn jelly-pink px-6 py-3 font-bold">
+      <div className="mx-auto max-w-lg px-4 py-12 text-center">
+        <p className="text-slate-600">このページにアクセスする権限がありません。</p>
+        <Link href="/" className="btn-primary mt-4 inline-block px-6 py-3">
           ホームへ
         </Link>
       </div>
@@ -91,17 +91,17 @@ export default function AdminPage() {
   }
 
   const tabs = [
-    { id: 'stats' as const, label: '統計', Icon: BarChart3 },
+    { id: 'stats' as const, label: '統計', Icon: ChartBar },
     { id: 'users' as const, label: 'ユーザー', Icon: Users },
     { id: 'content' as const, label: 'コンテンツ', Icon: ImageIcon },
     { id: 'reports' as const, label: '通報', Icon: Flag },
   ];
 
   return (
-    <div className="mx-auto max-w-4xl bg-candy-cream px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="mb-6 flex items-center gap-2">
-        <Shield className="h-8 w-8 text-candy-peach" />
-        <h1 className="text-2xl font-bold text-candy-text">管理者ダッシュボード</h1>
+        <Shield size={28} weight="regular" className="text-slate-400" />
+        <h1 className="text-2xl font-bold text-slate-900">管理者ダッシュボード</h1>
       </div>
 
       <div className="mb-6 flex flex-wrap gap-2">
@@ -110,11 +110,13 @@ export default function AdminPage() {
             key={id}
             type="button"
             onClick={() => setTab(id)}
-            className={`flex items-center gap-2 rounded-2xl border-[3px] px-4 py-2 text-sm font-medium shadow-candy-card transition ${
-              tab === id ? 'border-candy-peach/80 bg-candy-peach text-white' : 'border-candy-lavender/50 bg-white text-candy-text hover:bg-candy-lavender/20'
+            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition ${
+              tab === id
+                ? 'border-indigo-300 bg-gradient-to-br from-indigo-500 to-pink-500 text-white shadow-md'
+                : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
             }`}
           >
-            <Icon className="h-4 w-4" />
+            <Icon size={18} weight="regular" />
             {label}
           </button>
         ))}
@@ -126,17 +128,17 @@ export default function AdminPage() {
           animate={{ opacity: 1, y: 0 }}
           className="grid gap-4 sm:grid-cols-3"
         >
-          <div className="candy-card p-6">
-            <p className="text-sm font-medium text-candy-text/70">総売上（購入）</p>
-            <p className="text-2xl font-bold text-candy-peach">¥{(stats.totalRevenueCents / 100).toLocaleString()}</p>
+          <div className="modern-card p-6">
+            <p className="text-sm font-medium text-slate-500">総売上（購入）</p>
+            <p className="text-2xl font-bold text-indigo-600">¥{(stats.totalRevenueCents / 100).toLocaleString()}</p>
           </div>
-          <div className="candy-card p-6">
-            <p className="text-sm font-medium text-candy-text/70">アクティブユーザー</p>
-            <p className="text-2xl font-bold text-candy-mint">{stats.activeUsers}</p>
+          <div className="modern-card p-6">
+            <p className="text-sm font-medium text-slate-500">アクティブユーザー</p>
+            <p className="text-2xl font-bold text-slate-900">{stats.activeUsers}</p>
           </div>
-          <div className="candy-card p-6">
-            <p className="text-sm font-medium text-candy-text/70">投稿数</p>
-            <p className="text-2xl font-bold text-candy-lavender">{stats.photoCount}</p>
+          <div className="modern-card p-6">
+            <p className="text-sm font-medium text-slate-500">投稿数</p>
+            <p className="text-2xl font-bold text-slate-900">{stats.photoCount}</p>
           </div>
         </motion.div>
       )}
@@ -144,23 +146,20 @@ export default function AdminPage() {
       {tab === 'users' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
           {users.length === 0 ? (
-            <p className="text-candy-text/70">ユーザーがいません。</p>
+            <p className="text-slate-500">ユーザーがいません。</p>
           ) : (
             users.map((u) => (
-            <div
-              key={u.id}
-              className="candy-card flex items-center justify-between p-4"
-            >
+              <div key={u.id} className="modern-card flex items-center justify-between p-4">
                 <div>
-                <p className="font-medium text-candy-text">{u.display_name || u.id.slice(0, 8)}</p>
-                <p className="text-xs text-candy-text/60">{u.id}</p>
+                  <p className="font-medium text-slate-900">{u.display_name || u.id.slice(0, 8)}</p>
+                  <p className="text-xs text-slate-500">{u.id}</p>
                 </div>
                 <div className="flex gap-2">
                   {u.is_banned ? (
                     <button
                       type="button"
                       onClick={() => handleUnban(u.id)}
-                      className="rounded-xl bg-[#6BCB77]/20 px-3 py-1.5 text-sm font-medium text-[#6BCB77]"
+                      className="rounded-lg bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-200"
                     >
                       凍結解除
                     </button>
@@ -168,7 +167,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => handleBan(u.id)}
-                      className="rounded-xl bg-[#FF6B9D]/20 px-3 py-1.5 text-sm font-medium text-[#FF6B9D]"
+                      className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200"
                     >
                       凍結
                     </button>
@@ -183,24 +182,23 @@ export default function AdminPage() {
       {tab === 'content' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           {photos.length === 0 ? (
-            <p className="text-candy-text/70">投稿がありません。</p>
+            <p className="text-slate-500">投稿がありません。</p>
           ) : (
             photos.map((p) => (
-            <div
-              key={p.id}
-              className="candy-card flex items-center gap-4 p-4"
-            >
+              <div key={p.id} className="modern-card flex items-center gap-4 p-4">
                 <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
                   <Image src={p.image_url} alt="" fill className="object-cover" unoptimized sizes="80px" />
                 </div>
                 <div className="min-w-0 flex-1">
-                <p className="text-xs text-candy-text/60">{p.id}</p>
-                <p className="text-sm text-candy-text">owner: {p.owner_id.slice(0, 8)}… / {p.access_type} / {p.is_nsfw ? 'NSFW' : ''}</p>
+                  <p className="text-xs text-slate-500">{p.id}</p>
+                  <p className="text-sm text-slate-700">
+                    owner: {p.owner_id.slice(0, 8)}… / {p.access_type} / {p.is_nsfw ? 'NSFW' : ''}
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleHidePhoto(p.id)}
-                  className="rounded-xl bg-[#FF6B9D]/20 px-3 py-1.5 text-sm font-medium text-[#FF6B9D]"
+                  className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-200"
                 >
                   非表示
                 </button>
@@ -213,25 +211,27 @@ export default function AdminPage() {
       {tab === 'reports' && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
           {reports.length === 0 ? (
-            <p className="text-candy-text/70">通報はありません。</p>
+            <p className="text-slate-500">通報はありません。</p>
           ) : (
             reports
               .filter((r) => r.status === 'pending')
               .map((r) => (
-            <div key={r.id} className="candy-card p-4">
-              <p className="text-sm text-candy-text">写真ID: {r.photo_id.slice(0, 8)}… / 理由: {r.reason || '-'}</p>
+                <div key={r.id} className="modern-card p-4">
+                  <p className="text-sm text-slate-700">
+                    写真ID: {r.photo_id.slice(0, 8)}… / 理由: {r.reason || '-'}
+                  </p>
                   <div className="mt-2 flex gap-2">
                     <button
                       type="button"
                       onClick={() => handleResolve(r.id, 'resolved')}
-                      className="rounded-xl bg-[#6BCB77]/20 px-3 py-1.5 text-sm font-medium text-[#6BCB77]"
+                      className="rounded-lg bg-emerald-100 px-3 py-1.5 text-sm font-medium text-emerald-700 hover:bg-emerald-200"
                     >
                       対応済み
                     </button>
                     <button
                       type="button"
                       onClick={() => handleResolve(r.id, 'dismissed')}
-                      className="rounded-xl border-2 border-candy-lavender/50 bg-candy-lavender/15 px-3 py-1.5 text-sm font-medium text-candy-text"
+                      className="btn-secondary px-3 py-1.5 text-sm"
                     >
                       却下
                     </button>
@@ -240,7 +240,7 @@ export default function AdminPage() {
               ))
           )}
           {reports.filter((r) => r.status !== 'pending').length > 0 && (
-            <p className="text-candy-text/70">対応済み・却下: {reports.filter((r) => r.status !== 'pending').length}件</p>
+            <p className="text-slate-500">対応済み・却下: {reports.filter((r) => r.status !== 'pending').length}件</p>
           )}
         </motion.div>
       )}
